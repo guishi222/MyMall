@@ -14,9 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
 
-/**
- * Created by Administrator on 2018/3/8.
- */
+
 @Controller
 @RequestMapping("/manage/product")
 public class productManagerController {
@@ -49,6 +47,22 @@ public class productManagerController {
         }
         if(iUserService.checkAdmin(user).IsSuccess()){
             return iproductService.setSaleStatus(productId,status);
+        }else{
+            return ServerResponse.CreateByErrorMsg("无权限操作");
+        }
+    }
+    @RequestMapping("detail.do")
+    @ResponseBody
+    public ServerResponse getDetail(HttpSession session, Integer productId){
+        User user = (User)session.getAttribute(Const.CURRENT_USER);
+        if(user == null){
+            return ServerResponse.CreateByErrorCodeMsg(ResponseCode.NEED_LOGIN.getCode(),"用户未登录,请登录管理员");
+
+        }
+        if(iUserService.checkAdmin(user).IsSuccess()){
+            //填充业务
+            return iproductService.manageProductDetail(productId);
+
         }else{
             return ServerResponse.CreateByErrorMsg("无权限操作");
         }

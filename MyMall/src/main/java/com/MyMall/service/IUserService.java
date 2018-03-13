@@ -1,7 +1,4 @@
 package com.MyMall.service;
-/**
- * user Service µÄ½Ó¿Ú
- * */
 
 import com.MyMall.common.ServerResponse;
 import com.MyMall.pojo.User;

@@ -3,16 +3,17 @@ package com.MyMall.service.imp;
 import com.MyMall.common.ServerResponse;
 import com.MyMall.dao.CategoryMapper;
 import com.MyMall.dao.ProductMapper;
+import com.MyMall.pojo.Category;
 import com.MyMall.pojo.Product;
 import com.MyMall.service.IcategoryService;
 import com.MyMall.service.IproductService;
+import com.MyMall.util.dateUtil;
+import com.MyMall.vo.ProductDetailVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/**
- * Created by Administrator on 2018/3/8.
- */
+
 @Service("iproductSrtvice")
 public class productServiceImp implements IproductService {
     @Autowired
@@ -60,5 +61,42 @@ public class productServiceImp implements IproductService {
             return ServerResponse.CreateBySuccessMsg("修改产品销售状态成功");
         }
         return ServerResponse.CreateByErrorMsg("修改产品销售状态失败");
+    }
+    public ServerResponse<ProductDetailVo> manageProductDetail(Integer productId){
+        if(productId == null){
+            return ServerResponse.CreateByErrorMsg("参数错误");
+        }
+        Product product = productMapper.selectByPrimaryKey(productId);
+        if(product == null){
+            return ServerResponse.CreateByErrorMsg("产品已下架或者删除");
+        }
+        ProductDetailVo productDetailVo = assembleProductDetailVo(product);
+        return ServerResponse.CreateBySuccessData(productDetailVo);
+    }
+
+    private ProductDetailVo assembleProductDetailVo(Product product){
+        ProductDetailVo productDetailVo = new ProductDetailVo();
+        productDetailVo.setId(product.getId());
+        productDetailVo.setSubtitle(product.getSubtitle());
+        productDetailVo.setPrice(product.getPrice());
+        productDetailVo.setMainImage(product.getMainImage());
+        productDetailVo.setSubImages(product.getSubImages());
+        productDetailVo.setCategoryId(product.getCategoryId());
+        productDetailVo.setDetail(product.getDetail());
+        productDetailVo.setName(product.getName());
+        productDetailVo.setStatus(product.getStatus());
+        productDetailVo.setStock(product.getStock());
+
+
+        Category category = categoryMapper.selectByPrimaryKey(product.getCategoryId());
+        if(category == null){
+            productDetailVo.setParentCategoryId(0);//默认根节点
+        }else{
+            productDetailVo.setParentCategoryId(category.getParentId());
+        }
+
+        productDetailVo.setCreateTime(dateUtil.dateToStr(product.getCreateTime()));
+        productDetailVo.setUpdateTime(dateUtil.dateToStr(product.getUpdateTime()));
+        return productDetailVo;
     }
 }
