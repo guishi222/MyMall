@@ -3,6 +3,7 @@ package com.MyMall.service;
 import com.MyMall.common.ServerResponse;
 import com.MyMall.pojo.Product;
 import com.MyMall.vo.ProductDetailVo;
+import com.github.pagehelper.PageInfo;
 
 public interface IproductService {
     ServerResponse saveOrUpdateProduct(Product product);
@@ -11,5 +12,6 @@ public interface IproductService {
 
     ServerResponse<ProductDetailVo> manageProductDetail(Integer productId);
 
-    ProductDetailVo assembleProductDetailVo(Product product);
+    ServerResponse<PageInfo> getProductList(int pageNum, int pageSize);
+
 }

@@ -9,9 +9,15 @@ import com.MyMall.service.IcategoryService;
 import com.MyMall.service.IproductService;
 import com.MyMall.util.dateUtil;
 import com.MyMall.vo.ProductDetailVo;
+import com.MyMall.vo.ProductListVo;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 @Service("iproductSrtvice")
@@ -98,5 +104,30 @@ public class productServiceImp implements IproductService {
         productDetailVo.setCreateTime(dateUtil.dateToStr(product.getCreateTime()));
         productDetailVo.setUpdateTime(dateUtil.dateToStr(product.getUpdateTime()));
         return productDetailVo;
+    }
+    public ServerResponse<PageInfo> getProductList(int pageNum, int pageSize){
+        PageHelper.startPage(pageNum,pageSize);
+        List<Product> productList = productMapper.selectList();
+
+        List<ProductListVo> productListVoList = Lists.newArrayList();
+        for(Product productItem : productList){
+            ProductListVo productListVo = assembleProductListVo(productItem);
+            productListVoList.add(productListVo);
+        }
+        PageInfo pageResult = new PageInfo(productList);
+        pageResult.setList(productListVoList);
+        return ServerResponse.CreateBySuccessData(pageResult);
+    }
+
+    private ProductListVo assembleProductListVo(Product product){
+        ProductListVo productListVo = new ProductListVo();
+        productListVo.setId(product.getId());
+        productListVo.setName(product.getName());
+        productListVo.setCategoryId(product.getCategoryId());
+        productListVo.setMainImage(product.getMainImage());
+        productListVo.setPrice(product.getPrice());
+        productListVo.setSubtitle(product.getSubtitle());
+        productListVo.setStatus(product.getStatus());
+        return productListVo;
     }
 }
